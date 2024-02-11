@@ -30,7 +30,6 @@ ec-linear = { path = "packages/ec-linear" }
 push = { path = "packages/push" }
 push_macros = { path = "packages/push-macros" }
 
-
 [workspace.lints.clippy]
 pedantic = "warn"
 nursery = "warn"
@@ -38,3 +37,15 @@ unwrap_used = "warn"
 expect_used = "warn"
 module_name_repetitions = "allow"
 as_conversions = "deny"
+
+[profile.release-opt]
+inherits = "release"
+opt-level = 3
+debug = 0
+strip = true
+debug-assertions = false
+overflow-checks = false
+lto = "fat"
+panic = "abort"
+incremental = false
+codegen-units = 1
