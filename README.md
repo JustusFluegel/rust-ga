@@ -7,6 +7,15 @@ The main goal of this library is to drastically improve evolution performance, e
 For that purpose, this project is split into several sub-packages:
 - [ec-core](packages/ec-core/README.md) 
 
+
+# API
+
+## MSRV
+
+All pre-`1.0.0` versions have no api stability guarantees which includes the minimum supported Rust Version, but we strive to be able to compile master with the latest stable rust release, which is ensured by ci.
+
+# Legal
+
 ## License
 
 Licensed under either of
