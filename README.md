@@ -1,11 +1,11 @@
 # unhindered-ec
 
-This is a simple (but pretty flexible) bit-string genetic algorithm
-in Rust so I can compare its performance to a similar system in
-Clojure.
+**unhindered-ec** is a evolutionary computation library with a focus genetic algorithms.
 
-See [Planning.md](Planning.md) for info on where we're heading
-and what we've accomplished.
+The main goal of this library is to drastically improve evolution performance, especially for the [*push*](http://faculty.hampshire.edu/lspector/push.html) language.
+
+For that purpose, this project is split into several sub-packages:
+- [ec-core](packages/ec-core/README.md) 
 
 ## License
 
