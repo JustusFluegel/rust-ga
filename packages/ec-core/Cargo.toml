@@ -37,6 +37,10 @@ miette = { workspace = true, features = ["fancy"] }
 proptest = { workspace = true }
 test-strategy = { workspace = true }
 
+[features]
+default = ["erased"]
+erased = []
+
 [lints]
 workspace = true
 

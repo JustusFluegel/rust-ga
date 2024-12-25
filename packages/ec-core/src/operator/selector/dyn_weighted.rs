@@ -2,71 +2,12 @@ use std::error::Error;
 
 use miette::Diagnostic;
 use rand::{
-    Rng, RngCore,
+    Rng,
     seq::{IndexedRandom, WeightError},
 };
 
-use super::{Selector, error::EmptyPopulation};
+use super::{DynSelector, Selector, error::EmptyPopulation};
 use crate::population::Population;
-
-trait DynSelector<P>
-where
-    P: Population,
-{
-    fn dyn_select<'pop>(
-        &self,
-        population: &'pop P,
-        rng: &mut dyn RngCore,
-    ) -> Result<&'pop P::Individual, Box<dyn Error + Send + Sync>>;
-}
-
-impl<T, P> DynSelector<P> for T
-where
-    P: Population,
-    T: Selector<P, Error: Error + Send + Sync + 'static>,
-{
-    fn dyn_select<'pop>(
-        &self,
-        population: &'pop P,
-        rng: &mut dyn RngCore,
-    ) -> Result<&'pop P::Individual, Box<dyn Error + Send + Sync>> {
-        self.select(population, rng).map_err(|e| Box::new(e).into())
-    }
-}
-
-impl<P> Selector<P> for Box<dyn DynSelector<P>>
-where
-    P: Population,
-{
-    type Error = Box<dyn Error + Send + Sync>;
-
-    fn select<'pop, R: Rng + ?Sized>(
-        &self,
-        population: &'pop P,
-        mut rng: &mut R,
-    ) -> Result<&'pop <P as Population>::Individual, Self::Error> {
-        // the rng sadly needs to be behind a second reference here so that the dyn
-        // RngCore is of known size (the size of the inner mutable reference)
-        self.dyn_select(population, &mut rng)
-    }
-}
-
-impl<P> Selector<P> for Box<dyn DynSelector<P> + Send + Sync>
-where
-    P: Population,
-{
-    type Error = Box<dyn Error + Send + Sync>;
-
-    fn select<'pop, R: Rng + ?Sized>(
-        &self,
-        population: &'pop P,
-        mut rng: &mut R,
-    ) -> Result<&'pop <P as Population>::Individual, Self::Error> {
-        // the rng sadly needs to be behind a second reference here so that the dyn
-        // RngCore is of known size (the size of the inner mutable reference)
-        self.dyn_select(population, &mut rng)
-    }
-}
 
 pub struct DynWeighted<P: Population> {
     selectors: Vec<(Box<dyn DynSelector<P> + Send + Sync>, usize)>,
