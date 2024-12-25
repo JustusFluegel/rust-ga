@@ -1,6 +1,6 @@
 use anyhow::{Result, ensure};
 use ec_core::operator::recombinator::Recombinator;
-use rand::{Rng, rngs::ThreadRng};
+use rand::Rng;
 
 use super::crossover::Crossover;
 
@@ -11,10 +11,10 @@ pub struct TwoPointXo;
 impl<T> Recombinator<[Vec<T>; 2]> for TwoPointXo {
     type Output = Vec<T>;
 
-    fn recombine(
+    fn recombine<R: Rng + ?Sized>(
         &self,
         [mut first_genome, mut second_genome]: [Vec<T>; 2],
-        rng: &mut ThreadRng,
+        rng: &mut R,
     ) -> Result<Self::Output> {
         ensure!(
             first_genome.len() == second_genome.len(),
@@ -38,7 +38,11 @@ impl<T> Recombinator<[Vec<T>; 2]> for TwoPointXo {
 impl<T> Recombinator<(Vec<T>, Vec<T>)> for TwoPointXo {
     type Output = Vec<T>;
 
-    fn recombine(&self, genomes: (Vec<T>, Vec<T>), rng: &mut ThreadRng) -> Result<Self::Output> {
+    fn recombine<R: Rng + ?Sized>(
+        &self,
+        genomes: (Vec<T>, Vec<T>),
+        rng: &mut R,
+    ) -> Result<Self::Output> {
         self.recombine(<[Vec<T>; 2]>::from(genomes), rng)
     }
 }
@@ -61,10 +65,10 @@ where
 {
     type Output = G;
 
-    fn recombine(
+    fn recombine<R: Rng + ?Sized>(
         &self,
         [mut first_genome, mut second_genome]: [G; 2],
-        rng: &mut ThreadRng,
+        rng: &mut R,
     ) -> Result<Self::Output> {
         ensure!(
             first_genome.size() == second_genome.size(),
@@ -90,7 +94,7 @@ where
 {
     type Output = G;
 
-    fn recombine(&self, genomes: (G, G), rng: &mut ThreadRng) -> Result<Self::Output> {
+    fn recombine<R: Rng + ?Sized>(&self, genomes: (G, G), rng: &mut R) -> Result<Self::Output> {
         self.recombine(<[G; 2]>::from(genomes), rng)
     }
 }

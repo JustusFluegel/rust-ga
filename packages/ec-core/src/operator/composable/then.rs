@@ -1,5 +1,5 @@
 use anyhow::Context;
-use rand::rngs::ThreadRng;
+use rand::Rng;
 
 use super::{super::Operator, Composable};
 
@@ -23,7 +23,7 @@ where
     type Output = G::Output;
     type Error = anyhow::Error;
 
-    fn apply(&self, x: A, rng: &mut ThreadRng) -> Result<Self::Output, Self::Error> {
+    fn apply<R: Rng + ?Sized>(&self, x: A, rng: &mut R) -> Result<Self::Output, Self::Error> {
         let f_result = self
             .f
             .apply(x, rng)
@@ -56,7 +56,11 @@ pub mod tests {
         type Output = i32;
         type Error = Infallible;
 
-        fn apply(&self, input: i32, _: &mut ThreadRng) -> Result<Self::Output, Self::Error> {
+        fn apply<R: Rng + ?Sized>(
+            &self,
+            input: i32,
+            _: &mut R,
+        ) -> Result<Self::Output, Self::Error> {
             Ok(input + 1)
         }
     }
@@ -67,7 +71,11 @@ pub mod tests {
         type Output = i32;
         type Error = Infallible;
 
-        fn apply(&self, input: i32, _: &mut ThreadRng) -> Result<Self::Output, Self::Error> {
+        fn apply<R: Rng + ?Sized>(
+            &self,
+            input: i32,
+            _: &mut R,
+        ) -> Result<Self::Output, Self::Error> {
             Ok(input * 2)
         }
     }

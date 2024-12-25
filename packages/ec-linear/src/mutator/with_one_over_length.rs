@@ -3,7 +3,7 @@ use std::ops::Not;
 use anyhow::{Context, Result};
 use ec_core::operator::mutator::Mutator;
 use num_traits::ToPrimitive;
-use rand::rngs::ThreadRng;
+use rand::Rng;
 
 use super::with_rate::WithRate;
 use crate::genome::Linear;
@@ -14,7 +14,7 @@ impl<T> Mutator<Vec<T>> for WithOneOverLength
 where
     T: Not<Output = T>,
 {
-    fn mutate(&self, genome: Vec<T>, rng: &mut ThreadRng) -> Result<Vec<T>> {
+    fn mutate<R: Rng + ?Sized>(&self, genome: Vec<T>, rng: &mut R) -> Result<Vec<T>> {
         let genome_length = genome.len().to_f32().with_context(|| {
             format!(
                 "The genome length {} couldn't be converted to an f32 value",
@@ -32,7 +32,7 @@ where
     T: Linear + FromIterator<T::Gene> + IntoIterator<Item = T::Gene>,
     T::Gene: Not<Output = T::Gene>,
 {
-    fn mutate(&self, genome: T, rng: &mut ThreadRng) -> Result<T> {
+    fn mutate<R: Rng + ?Sized>(&self, genome: T, rng: &mut R) -> Result<T> {
         let genome_length = genome.size().to_f32().with_context(|| {
             format!(
                 "The genome length {} couldn't be converted to an f32 value",

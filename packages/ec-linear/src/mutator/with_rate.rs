@@ -2,7 +2,7 @@ use std::ops::Not;
 
 use anyhow::Result;
 use ec_core::operator::mutator::Mutator;
-use rand::{Rng, rngs::ThreadRng};
+use rand::Rng;
 
 use crate::genome::Linear;
 
@@ -16,7 +16,7 @@ impl<T> Mutator<Vec<T>> for WithRate
 where
     T: Not<Output = T>,
 {
-    fn mutate(&self, genome: Vec<T>, rng: &mut ThreadRng) -> Result<Vec<T>> {
+    fn mutate<R: Rng + ?Sized>(&self, genome: Vec<T>, rng: &mut R) -> Result<Vec<T>> {
         Ok(genome
             .into_iter()
             .map(|bit| {
@@ -35,7 +35,7 @@ where
     T: Linear + FromIterator<T::Gene> + IntoIterator<Item = T::Gene>,
     T::Gene: Not<Output = T::Gene>,
 {
-    fn mutate(&self, genome: T, rng: &mut ThreadRng) -> Result<T> {
+    fn mutate<R: Rng + ?Sized>(&self, genome: T, rng: &mut R) -> Result<T> {
         Ok(genome
             .into_iter()
             .map(|bit| {

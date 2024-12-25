@@ -1,4 +1,4 @@
-use rand::rngs::ThreadRng;
+use rand::Rng;
 
 use super::{Composable, Operator};
 
@@ -57,8 +57,10 @@ pub trait Mutator<G> {
     /// This will return an error if there is an error mutating the given
     /// genome. This will usually be because the given `genome` is invalid in
     /// some way, thus making the mutation impossible.
-    fn mutate(&self, genome: G, rng: &mut ThreadRng) -> anyhow::Result<G>;
+    fn mutate<R: Rng + ?Sized>(&self, genome: G, rng: &mut R) -> anyhow::Result<G>;
 }
+
+// static_assertions::assert_obj_safe!(Mutator<()>);
 
 /// A wrapper that converts a [`Mutator`] into an [`Operator`].
 ///
@@ -238,7 +240,7 @@ where
     type Error = anyhow::Error;
 
     /// Apply this `Mutator` as an `Operator`
-    fn apply(&self, genome: G, rng: &mut ThreadRng) -> Result<Self::Output, Self::Error> {
+    fn apply<R: Rng + ?Sized>(&self, genome: G, rng: &mut R) -> Result<Self::Output, Self::Error> {
         self.mutator.mutate(genome, rng)
     }
 }
@@ -251,7 +253,7 @@ impl<M, G> Mutator<G> for &M
 where
     M: Mutator<G>,
 {
-    fn mutate(&self, genome: G, rng: &mut ThreadRng) -> anyhow::Result<G> {
+    fn mutate<R: Rng + ?Sized>(&self, genome: G, rng: &mut R) -> anyhow::Result<G> {
         (**self).mutate(genome, rng)
     }
 }
@@ -262,7 +264,7 @@ where
 )]
 #[cfg(test)]
 mod tests {
-    use rand::{Rng, rngs::ThreadRng, thread_rng};
+    use rand::{Rng, thread_rng};
 
     use super::Mutator;
     use crate::operator::{Composable, Operator, mutator::Mutate};
@@ -272,10 +274,10 @@ mod tests {
     struct FlipOne;
 
     impl Mutator<Genome<bool>> for FlipOne {
-        fn mutate(
+        fn mutate<R: Rng + ?Sized>(
             &self,
             mut genome: Genome<bool>,
-            rng: &mut ThreadRng,
+            rng: &mut R,
         ) -> anyhow::Result<Genome<bool>> {
             let index = rng.gen_range(0..genome.len());
             genome[index] = !genome[index];
@@ -291,10 +293,10 @@ mod tests {
         type Output = usize;
         type Error = anyhow::Error;
 
-        fn apply(
+        fn apply<R: Rng + ?Sized>(
             &self,
             genome: Genome<bool>,
-            _: &mut ThreadRng,
+            _: &mut R,
         ) -> Result<Self::Output, Self::Error> {
             Ok(genome.iter().filter(|&&x| x).count())
         }

@@ -2,7 +2,7 @@ use std::error::Error;
 
 use miette::Diagnostic;
 use rand::{
-    rngs::ThreadRng,
+    Rng, RngCore,
     seq::{IndexedRandom, WeightError},
 };
 
@@ -16,7 +16,7 @@ where
     fn dyn_select<'pop>(
         &self,
         population: &'pop P,
-        rng: &mut ThreadRng,
+        rng: &mut dyn RngCore,
     ) -> Result<&'pop P::Individual, Box<dyn Error + Send + Sync>>;
 }
 
@@ -28,9 +28,43 @@ where
     fn dyn_select<'pop>(
         &self,
         population: &'pop P,
-        rng: &mut ThreadRng,
+        rng: &mut dyn RngCore,
     ) -> Result<&'pop P::Individual, Box<dyn Error + Send + Sync>> {
         self.select(population, rng).map_err(|e| Box::new(e).into())
+    }
+}
+
+impl<P> Selector<P> for Box<dyn DynSelector<P>>
+where
+    P: Population,
+{
+    type Error = Box<dyn Error + Send + Sync>;
+
+    fn select<'pop, R: Rng + ?Sized>(
+        &self,
+        population: &'pop P,
+        mut rng: &mut R,
+    ) -> Result<&'pop <P as Population>::Individual, Self::Error> {
+        // the rng sadly needs to be behind a second reference here so that the dyn
+        // RngCore is of known size (the size of the inner mutable reference)
+        self.dyn_select(population, &mut rng)
+    }
+}
+
+impl<P> Selector<P> for Box<dyn DynSelector<P> + Send + Sync>
+where
+    P: Population,
+{
+    type Error = Box<dyn Error + Send + Sync>;
+
+    fn select<'pop, R: Rng + ?Sized>(
+        &self,
+        population: &'pop P,
+        mut rng: &mut R,
+    ) -> Result<&'pop <P as Population>::Individual, Self::Error> {
+        // the rng sadly needs to be behind a second reference here so that the dyn
+        // RngCore is of known size (the size of the inner mutable reference)
+        self.dyn_select(population, &mut rng)
     }
 }
 
@@ -90,14 +124,14 @@ where
 {
     type Error = DynWeightedError;
 
-    fn select<'pop>(
+    fn select<'pop, R: Rng + ?Sized>(
         &self,
         population: &'pop P,
-        rng: &mut ThreadRng,
+        rng: &mut R,
     ) -> Result<&'pop P::Individual, Self::Error> {
         let (selector, _) = self.selectors.choose_weighted(rng, |(_, w)| *w)?;
         selector
-            .dyn_select(population, rng)
+            .select(population, rng)
             .map_err(DynWeightedError::Other)
     }
 }

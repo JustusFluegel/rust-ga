@@ -1,4 +1,4 @@
-use rand::rngs::ThreadRng;
+use rand::Rng;
 
 use super::{Composable, Operator};
 use crate::population::Population;
@@ -75,12 +75,14 @@ where
     /// This will return an error if there's some problem selecting. That will
     /// usually be because the population is empty or not large enough for
     /// the desired selector.
-    fn select<'pop>(
+    fn select<'pop, R: Rng + ?Sized>(
         &self,
         population: &'pop P,
-        rng: &mut ThreadRng,
+        rng: &mut R,
     ) -> Result<&'pop P::Individual, Self::Error>;
 }
+
+// static_assertions::assert_obj_safe!(Selector<(), Error = ()>);
 
 /// A wrapper that converts a `Selector` into an `Operator`.
 ///
@@ -258,7 +260,11 @@ where
     type Error = S::Error;
 
     /// Apply this `Selector` as an `Operator`
-    fn apply(&self, population: &'pop P, rng: &mut ThreadRng) -> Result<Self::Output, Self::Error> {
+    fn apply<R: Rng + ?Sized>(
+        &self,
+        population: &'pop P,
+        rng: &mut R,
+    ) -> Result<Self::Output, Self::Error> {
         self.selector.select(population, rng)
     }
 }
@@ -274,10 +280,10 @@ where
 {
     type Error = S::Error;
 
-    fn select<'pop>(
+    fn select<'pop, R: Rng + ?Sized>(
         &self,
         population: &'pop P,
-        rng: &mut ThreadRng,
+        rng: &mut R,
     ) -> Result<&'pop P::Individual, Self::Error> {
         (**self).select(population, rng)
     }
@@ -290,7 +296,7 @@ where
 #[cfg(test)]
 mod tests {
     use anyhow::Context;
-    use rand::{rngs::ThreadRng, thread_rng};
+    use rand::{Rng, thread_rng};
 
     use super::{Select, Selector};
     use crate::operator::{Composable, Operator};
@@ -301,10 +307,10 @@ mod tests {
     impl<T> Selector<Vec<T>> for First {
         type Error = anyhow::Error;
 
-        fn select<'pop>(
+        fn select<'pop, R: Rng + ?Sized>(
             &self,
             population: &'pop Vec<T>,
-            _: &mut ThreadRng,
+            _: &mut R,
         ) -> anyhow::Result<&'pop T> {
             population
                 .first()
@@ -323,7 +329,7 @@ mod tests {
         type Output = usize;
         type Error = anyhow::Error;
 
-        fn apply(&self, input: T, _: &mut ThreadRng) -> anyhow::Result<usize> {
+        fn apply<R: Rng + ?Sized>(&self, input: T, _: &mut R) -> anyhow::Result<usize> {
             Ok(input.as_ref().len())
         }
     }

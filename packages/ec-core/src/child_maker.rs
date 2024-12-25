@@ -1,5 +1,5 @@
 use anyhow::Result;
-use rand::rngs::ThreadRng;
+use rand::Rng;
 
 use crate::{operator::selector::Selector, population::Population};
 
@@ -22,58 +22,60 @@ where
     ///
     /// This can return errors if any aspect of creating this child fail.
     /// That can include constructing or scoring the genome.
-    fn make_child(
+    fn make_child<R: Rng + ?Sized>(
         &self,
-        rng: &mut ThreadRng,
+        rng: &mut R,
         population: &P,
         selector: &S,
     ) -> Result<P::Individual>;
 }
 
+// static_assertions::assert_obj_safe!(ChildMaker<(), ()>);
+
 // NOTE: These further impls aren't actually needed anymore because
 //   we (as of 19 Feb 2023) take ownership of the ChildMaker instead
 //   of storing a `& dyn ChildMaker` in `Generation`.
-impl<P, S> ChildMaker<P, S> for &dyn ChildMaker<P, S>
-where
-    P: Population,
-    S: Selector<P>,
-{
-    fn make_child(
-        &self,
-        rng: &mut ThreadRng,
-        population: &P,
-        selector: &S,
-    ) -> Result<P::Individual> {
-        (*self).make_child(rng, population, selector)
-    }
-}
+// impl<P, S> ChildMaker<P, S> for &dyn ChildMaker<P, S>
+// where
+//     P: Population,
+//     S: Selector<P>,
+// {
+//     fn make_child(
+//         &self,
+//         rng: &mut ThreadRng,
+//         population: &P,
+//         selector: &S,
+//     ) -> Result<P::Individual> {
+//         (*self).make_child(rng, population, selector)
+//     }
+// }
 
-impl<P, S> ChildMaker<P, S> for &(dyn ChildMaker<P, S> + Send)
-where
-    P: Population,
-    S: Selector<P>,
-{
-    fn make_child(
-        &self,
-        rng: &mut ThreadRng,
-        population: &P,
-        selector: &S,
-    ) -> Result<P::Individual> {
-        (*self).make_child(rng, population, selector)
-    }
-}
+// impl<P, S> ChildMaker<P, S> for &(dyn ChildMaker<P, S> + Send)
+// where
+//     P: Population,
+//     S: Selector<P>,
+// {
+//     fn make_child(
+//         &self,
+//         rng: &mut ThreadRng,
+//         population: &P,
+//         selector: &S,
+//     ) -> Result<P::Individual> {
+//         (*self).make_child(rng, population, selector)
+//     }
+// }
 
-impl<P, S> ChildMaker<P, S> for &(dyn ChildMaker<P, S> + Send + Sync)
-where
-    P: Population,
-    S: Selector<P>,
-{
-    fn make_child(
-        &self,
-        rng: &mut ThreadRng,
-        population: &P,
-        selector: &S,
-    ) -> Result<P::Individual> {
-        (*self).make_child(rng, population, selector)
-    }
-}
+// impl<P, S> ChildMaker<P, S> for &(dyn ChildMaker<P, S> + Send + Sync)
+// where
+//     P: Population,
+//     S: Selector<P>,
+// {
+//     fn make_child(
+//         &self,
+//         rng: &mut ThreadRng,
+//         population: &P,
+//         selector: &S,
+//     ) -> Result<P::Individual> {
+//         (*self).make_child(rng, population, selector)
+//     }
+// }

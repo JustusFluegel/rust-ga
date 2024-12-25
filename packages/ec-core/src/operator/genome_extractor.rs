@@ -1,5 +1,7 @@
 use std::convert::Infallible;
 
+use rand::Rng;
+
 use super::{Composable, Operator};
 use crate::individual::Individual;
 
@@ -69,10 +71,10 @@ where
     type Output = I::Genome;
     type Error = Infallible;
 
-    fn apply(
+    fn apply<R: Rng + ?Sized>(
         &self,
         individual: &I,
-        _: &mut rand::rngs::ThreadRng,
+        _: &mut R,
     ) -> Result<Self::Output, Self::Error> {
         Ok(individual.genome().clone())
     }
@@ -83,7 +85,7 @@ impl Composable for GenomeExtractor {}
 #[expect(clippy::unwrap_used, reason = "panicking is appropriate in tests")]
 #[cfg(test)]
 mod tests {
-    use rand::{Rng, rngs::ThreadRng, thread_rng};
+    use rand::{Rng, thread_rng};
 
     use super::GenomeExtractor;
     use crate::{
@@ -98,10 +100,10 @@ mod tests {
     struct FlipOne;
 
     impl Mutator<Genome<bool>> for FlipOne {
-        fn mutate(
+        fn mutate<R: Rng + ?Sized>(
             &self,
             mut genome: Genome<bool>,
-            rng: &mut ThreadRng,
+            rng: &mut R,
         ) -> anyhow::Result<Genome<bool>> {
             let index = rng.gen_range(0..genome.len());
             genome[index] = !genome[index];

@@ -1,4 +1,4 @@
-use rand::rngs::ThreadRng;
+use rand::Rng;
 
 use super::{Composable, Operator};
 
@@ -79,8 +79,10 @@ pub trait Recombinator<GS> {
     /// This will return an error if there is an error recombining the given
     /// parent genomes. This will usually be because the given `genomes` are
     /// invalid in some way, thus making recombination impossible.
-    fn recombine(&self, genomes: GS, rng: &mut ThreadRng) -> anyhow::Result<Self::Output>;
+    fn recombine<R: Rng + ?Sized>(&self, genomes: GS, rng: &mut R) -> anyhow::Result<Self::Output>;
 }
+
+// static_assertions::assert_obj_safe!(Recombinator<(), Output = ()>);
 
 /// A wrapper that converts a `Recombinator` into an `Operator`,
 ///
@@ -280,16 +282,16 @@ impl<R> Recombine<R> {
     }
 }
 
-impl<R, G> Operator<G> for Recombine<R>
+impl<Rec, G> Operator<G> for Recombine<Rec>
 where
-    R: Recombinator<G>,
+    Rec: Recombinator<G>,
 {
-    type Output = R::Output;
+    type Output = Rec::Output;
     type Error = anyhow::Error;
 
     /// Apply the wrapped [`Recombinator`] as an [`Operator`] to the given
     /// genomes.
-    fn apply(&self, genomes: G, rng: &mut ThreadRng) -> Result<Self::Output, Self::Error> {
+    fn apply<R: Rng + ?Sized>(&self, genomes: G, rng: &mut R) -> Result<Self::Output, Self::Error> {
         self.recombinator.recombine(genomes, rng)
     }
 }
@@ -298,13 +300,13 @@ impl<R> Composable for Recombine<R> {}
 /// Implement [`Recombinator`] for a reference to a [`Recombinator`].
 /// This allows us to wrap a reference to a [`Recombinator`] in a [`Recombine`]
 /// operator, allowing recombinators to be used in chains of operators.
-impl<R, GS> Recombinator<GS> for &R
+impl<Rec, GS> Recombinator<GS> for &Rec
 where
-    R: Recombinator<GS>,
+    Rec: Recombinator<GS>,
 {
-    type Output = R::Output;
+    type Output = Rec::Output;
 
-    fn recombine(&self, genomes: GS, rng: &mut ThreadRng) -> anyhow::Result<Self::Output> {
+    fn recombine<R: Rng + ?Sized>(&self, genomes: GS, rng: &mut R) -> anyhow::Result<Self::Output> {
         (**self).recombine(genomes, rng)
     }
 }
@@ -317,7 +319,7 @@ where
 mod tests {
     use std::convert::Infallible;
 
-    use rand::{Rng, rngs::ThreadRng, thread_rng};
+    use rand::{Rng, thread_rng};
 
     use super::{Recombinator, Recombine};
     use crate::operator::{Composable, Operator};
@@ -332,10 +334,10 @@ mod tests {
     impl<T: Copy> Recombinator<Parents<T>> for SwapOne {
         type Output = Genome<T>;
 
-        fn recombine(
+        fn recombine<R: Rng + ?Sized>(
             &self,
             (mut first_parent, second_parent): Parents<T>,
-            rng: &mut ThreadRng,
+            rng: &mut R,
         ) -> anyhow::Result<Genome<T>> {
             let index = rng.gen_range(0..first_parent.len());
             first_parent[index] = second_parent[index];
@@ -351,10 +353,10 @@ mod tests {
         type Output = usize;
         type Error = Infallible;
 
-        fn apply(
+        fn apply<R: Rng + ?Sized>(
             &self,
             genome: Genome<bool>,
-            _: &mut ThreadRng,
+            _: &mut R,
         ) -> Result<Self::Output, Self::Error> {
             Ok(genome.iter().filter(|&&x| x).count())
         }
