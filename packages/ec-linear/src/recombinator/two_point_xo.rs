@@ -7,7 +7,8 @@ use super::{
 };
 use crate::{genome::Linear, recombinator::errors::GenomeLengthTooShort};
 
-/// Recombinator for fixed-length linear genomes, like [`Bitstring`]
+/// Recombinator for fixed-length linear genomes, like
+/// [`Bitstring`](crate::genome::bitstring::Bitstring).
 ///
 /// This recombinator works by having two parents and randomly choosing a range
 /// in the genes to swap. This is in contrast to
