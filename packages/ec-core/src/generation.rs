@@ -12,15 +12,15 @@ use crate::{operator::Operator, population::Population};
 /// Take a look at [`Generation::par_next`] and [`Generation::serial_next`] for
 /// further information on how this is used to generate new generations.
 ///
-/// # Example
+/// # Example[^ec-linear-usage]
 /// ```
-///     
+/// todo!()
 /// ```
-/// [^ec-linear-usage]
 ///
-/// [^ec-linear-usage]: Note that this example uses `ec-linear` which is not a dependency of this package.
-///     If you want to replicate this example, make sure `ec-linear` is
-///     installed.
+/// [^ec-linear-usage]: Note that this example uses [`ec-linear`](#)
+///     which is <strong>not</strong> a dependency of this package.
+///     If you want to replicate this example, make sure
+///     [`ec-linear`](#) is installed.
 pub struct Generation<P, C> {
     population: P,
     child_maker: C,

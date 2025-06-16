@@ -23,3 +23,8 @@ The following steps are usually required:
   > You'll need to publish packages in the order that the dependency graph in the workspace flows, since if you don't the packages published won't find their dependencies in the registry.
   > 
   > A good choice is usually the order `ec_macros -> ec-core -> ec-linear -> push_macros -> push`.
+
+## V1 Publishing TODO's
+
+- [ ] There are some links in the rustdocs which are currently just placeholders (`(#)`) since we don't have anywhere to link them to yet.
+      This might be the case if we want to link to docs from other crates like linking to ec-core from ec-linear or vice-versa. They need to be replaced before actually publishing a V1.
