@@ -9,6 +9,7 @@ pub use ec_macros::Composable;
 pub use map::*;
 pub use repeat_with::*;
 pub use then::*;
+
 pub trait Composable {
     fn then<Op>(self, op: Op) -> Then<Self, Op>
     where
@@ -59,10 +60,6 @@ pub trait Composable {
     {
         T::construct(self, context)
     }
-
-    // fn and_select<S>(self, selector: S) -> Then<Self, Select<S>> {
-    //     Then::new(self, Select::new(selector))
-    // }
 }
 
 static_assertions::assert_obj_safe!(Composable);
