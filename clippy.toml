@@ -18,6 +18,10 @@ allowed-duplicate-crates = [
   "manyhow",
   "manyhow-macros",
   "syn",
+  "rand",
+  "rand_core",
+  "getrandom",
+  "r-efi"
 ]
 allow-unwrap-in-tests = true
 allow-expect-in-tests = true
