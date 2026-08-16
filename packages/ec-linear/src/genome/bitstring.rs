@@ -4,7 +4,7 @@ use ec_core::{
     distributions::collection::{self, ConvertToCollectionDistribution},
     genome::Genome,
 };
-use rand::{Rng, distr::StandardUniform, prelude::Distribution};
+use rand::{Rng, RngExt, distr::StandardUniform, prelude::Distribution};
 
 use super::Linear;
 use crate::recombinator::{crossover::Crossover, errors::MultipleGeneAccess};

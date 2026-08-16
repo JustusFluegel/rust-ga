@@ -1,4 +1,4 @@
-use rand::{Rng, RngCore};
+use rand::Rng;
 
 use super::ChildMaker;
 use crate::{operator::selector::Selector, population::Population};
@@ -61,7 +61,7 @@ where
     /// That can include constructing or scoring the genome.
     fn dyn_make_child(
         &self,
-        rng: &mut dyn RngCore,
+        rng: &mut dyn Rng,
         population: &P,
         selector: &S,
     ) -> Result<P::Individual, E>;
@@ -77,7 +77,7 @@ where
 {
     fn dyn_make_child(
         &self,
-        rng: &mut dyn RngCore,
+        rng: &mut dyn Rng,
         population: &P,
         selector: &S,
     ) -> Result<<P as Population>::Individual, E> {

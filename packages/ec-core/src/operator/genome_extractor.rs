@@ -18,7 +18,7 @@ use crate::individual::Individual;
 /// extract the genome from an individual and mutate it.
 ///
 /// ```
-/// # use rand::{rng, Rng};
+/// # use rand::{rng, Rng, RngExt};
 /// # use ec_core::{
 /// #     individual::ec::EcIndividual,
 /// #     operator::{
@@ -91,7 +91,7 @@ where
 mod tests {
     use std::convert::Infallible;
 
-    use rand::{Rng, rng};
+    use rand::{Rng, RngExt, rng};
 
     use super::GenomeExtractor;
     use crate::{

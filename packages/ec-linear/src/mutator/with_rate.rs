@@ -1,7 +1,7 @@
 use std::{convert::Infallible, ops::Not};
 
 use ec_core::operator::mutator::Mutator;
-use rand::Rng;
+use rand::{Rng, RngExt};
 
 use crate::genome::Linear;
 

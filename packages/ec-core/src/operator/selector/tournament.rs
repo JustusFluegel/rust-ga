@@ -161,7 +161,7 @@ where
         }
         population
             .as_ref()
-            .choose_multiple(rng, self.size.into())
+            .sample(rng, self.size.into())
             .max()
             // This should never happen, because an empty population will cause the
             // `if` test test to return an `Err` since `self.size` is guaranteed to
