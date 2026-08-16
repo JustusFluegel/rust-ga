@@ -84,7 +84,7 @@ where
 mod tests {
     use core::ops::Range;
 
-    use rand::{Rng, prelude::Distribution, rng};
+    use rand::{Rng, RngExt, prelude::Distribution, rng};
 
     use crate::{
         distributions::collection::ConvertToCollectionDistribution, population::Population,

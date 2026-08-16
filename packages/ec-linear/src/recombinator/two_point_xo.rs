@@ -1,5 +1,5 @@
 use ec_core::operator::recombinator::Recombinator;
-use rand::Rng;
+use rand::{Rng, RngExt};
 
 use super::{
     crossover::Crossover,

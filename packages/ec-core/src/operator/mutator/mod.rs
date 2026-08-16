@@ -37,7 +37,7 @@ pub use erased::*;
 /// that exactly one bit has changed.
 ///
 /// ```
-/// # use rand::{rng, Rng};
+/// # use rand::{rng, Rng, RngExt};
 /// # use ec_core::operator::mutator::Mutator;
 /// # use std::convert::Infallible;
 /// #
@@ -151,7 +151,7 @@ pub trait Mutator<G> {
 /// #     mutator::{Mutate, Mutator},
 /// #     Composable, Operator,
 /// # };
-/// # use rand::{Rng, rng};
+/// # use rand::{Rng, RngExt, rng};
 /// #
 /// type Genome<T> = [T; 4];
 ///
@@ -208,7 +208,7 @@ pub trait Mutator<G> {
 /// #     mutator::{Mutate, Mutator},
 /// #     Composable, Operator,
 /// # };
-/// # use rand::{Rng, rng};
+/// # use rand::{Rng, RngExt, rng};
 /// # use std::convert::Infallible;
 /// #
 /// # type Genome<T> = [T; 4];
@@ -266,7 +266,7 @@ impl<M> Mutate<M> {
     /// #     mutator::{Mutate, Mutator},
     /// #     Composable, Operator,
     /// # };
-    /// # use rand::{Rng, rng};
+    /// # use rand::{Rng, RngExt, rng};
     /// # use std::convert::Infallible;
     /// #
     /// type Genome<T> = [T; 4];
@@ -331,7 +331,7 @@ where
     /// #     mutator::{Mutate, Mutator},
     /// #     Composable, Operator,
     /// # };
-    /// # use rand::{Rng, rng};
+    /// # use rand::{Rng, RngExt, rng};
     /// # use std::convert::Infallible;
     /// #
     /// # type Genome<T> = [T; 4];
@@ -411,7 +411,7 @@ where
 mod tests {
     use std::convert::Infallible;
 
-    use rand::{Rng, rng};
+    use rand::{Rng, RngExt, rng};
 
     use super::Mutator;
     use crate::operator::{Composable, Operator, mutator::Mutate};

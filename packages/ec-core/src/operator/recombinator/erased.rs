@@ -1,4 +1,4 @@
-use rand::{Rng, RngCore};
+use rand::Rng;
 
 use super::Recombinator;
 
@@ -59,7 +59,7 @@ pub trait DynRecombinator<GS, E = Box<dyn std::error::Error + Send + Sync>> {
     /// This will return an error if there is an error recombining the given
     /// parent genomes. This will usually be because the given `genomes` are
     /// invalid in some way, thus making recombination impossible.
-    fn dyn_recombine(&self, genomes: GS, rng: &mut dyn RngCore) -> Result<Self::Output, E>;
+    fn dyn_recombine(&self, genomes: GS, rng: &mut dyn Rng) -> Result<Self::Output, E>;
 }
 
 static_assertions::assert_obj_safe!(DynRecombinator<(), Output = ()>);
@@ -70,7 +70,7 @@ where
 {
     type Output = T::Output;
 
-    fn dyn_recombine(&self, genomes: GS, rng: &mut dyn RngCore) -> Result<Self::Output, E> {
+    fn dyn_recombine(&self, genomes: GS, rng: &mut dyn Rng) -> Result<Self::Output, E> {
         self.recombine(genomes, rng).map_err(Into::into)
     }
 }

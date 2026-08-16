@@ -1,4 +1,4 @@
-use rand::{Rng, RngCore};
+use rand::Rng;
 
 use super::Selector;
 use crate::population::Population;
@@ -68,7 +68,7 @@ where
     fn dyn_select<'pop>(
         &self,
         population: &'pop P,
-        rng: &mut dyn RngCore,
+        rng: &mut dyn Rng,
     ) -> Result<&'pop P::Individual, Error>;
 }
 
@@ -82,7 +82,7 @@ where
     fn dyn_select<'pop>(
         &self,
         population: &'pop P,
-        rng: &mut dyn RngCore,
+        rng: &mut dyn Rng,
     ) -> Result<&'pop <P as Population>::Individual, E> {
         self.select(population, rng).map_err(Into::into)
     }

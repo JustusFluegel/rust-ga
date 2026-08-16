@@ -1,6 +1,6 @@
 use std::error::Error as StdError;
 
-use rand::{Rng, RngCore};
+use rand::Rng;
 
 use super::{Composable, Operator};
 
@@ -60,7 +60,7 @@ pub trait DynOperator<Input, Error = Box<dyn StdError + Send + Sync>>: Composabl
     /// This will return an error if there's some problem applying the operator.
     /// Given how general this concept is, there's no good way of saying here
     /// what that might be.
-    fn dyn_apply(&self, input: Input, rng: &mut dyn RngCore) -> Result<Self::Output, Error>;
+    fn dyn_apply(&self, input: Input, rng: &mut dyn Rng) -> Result<Self::Output, Error>;
 }
 
 impl<T, I, E> DynOperator<I, E> for T
@@ -69,7 +69,7 @@ where
 {
     type Output = T::Output;
 
-    fn dyn_apply(&self, input: I, rng: &mut dyn RngCore) -> Result<Self::Output, E> {
+    fn dyn_apply(&self, input: I, rng: &mut dyn Rng) -> Result<Self::Output, E> {
         self.apply(input, rng).map_err(Into::into)
     }
 }

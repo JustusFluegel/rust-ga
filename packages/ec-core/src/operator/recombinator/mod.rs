@@ -50,7 +50,7 @@ pub use erased::*;
 /// second parent.
 ///
 /// ```
-/// # use rand::{rng, Rng};
+/// # use rand::{rng, Rng, RngExt};
 /// # use ec_core::operator::recombinator::Recombinator;
 /// # use std::convert::Infallible;
 /// #
@@ -178,7 +178,7 @@ pub trait Recombinator<GS> {
 ///
 /// ```
 /// # use std::convert::Infallible;
-/// # use rand::{rng, Rng};
+/// # use rand::{rng, Rng, RngExt};
 /// #
 /// # use ec_core::operator::{recombinator::{Recombinator, Recombine}, Composable, Operator};
 /// #
@@ -242,7 +242,7 @@ pub trait Recombinator<GS> {
 /// ownership of the recombinator.
 ///
 /// ```
-/// # use rand::{ rng, Rng};
+/// # use rand::{rng, Rng, RngExt};
 /// # use std::convert::Infallible;
 /// #
 /// # use ec_core::operator::{recombinator::{Recombinator, Recombine}, Composable, Operator};
@@ -352,7 +352,7 @@ where
 mod tests {
     use std::convert::Infallible;
 
-    use rand::{Rng, rng};
+    use rand::{Rng, RngExt, rng};
 
     use super::{Recombinator, Recombine};
     use crate::operator::{Composable, Operator};

@@ -6,7 +6,7 @@ use ec_core::{
     genome::Genome,
 };
 use ec_linear::genome::Linear;
-use rand::{Rng, prelude::Distribution};
+use rand::{Rng, RngExt, prelude::Distribution};
 
 use crate::instruction::{NumOpens, PushInstruction};
 

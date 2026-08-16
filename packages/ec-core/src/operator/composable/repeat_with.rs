@@ -127,7 +127,7 @@ where
 mod tests {
     use std::{convert::Infallible, ops::Range};
 
-    use rand::{Rng, rng};
+    use rand::{Rng, RngExt, rng};
 
     use super::*;
 

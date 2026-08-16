@@ -1,6 +1,6 @@
 use std::ops::Not;
 
-use rand::Rng;
+use rand::{Rng, RngExt};
 
 /// Sample `N` distinct values from range `start..end` returning
 /// sorted result
